@@ -15,7 +15,7 @@ public class TestCase {
   @Before
   public void setUp() {
     try {
-      File tempFile = File.createTempFile("tracker", ".db");
+      File tempFile = File.createTempFile("tracker", "db");
       tempFile.deleteOnExit();
       databasePath = tempFile.getAbsolutePath();
     } catch (IOException ex) {

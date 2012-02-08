@@ -8,24 +8,11 @@ import java.util.List;
  *
  * @author stephej1
  */
-public class Project {
-
-  private static Database db = null;
-
-  public static void setDatabase(Database d) {
-    db = d;
-  }
-
-  public static Database getDatabase() {
-    if (db == null) {
-      db = Database.getInstance();
-    }
-    return db;
-  }
+public class Project extends Model {
 
   public static Project create(String name) {
     HashMap values = new HashMap<String, Object>(2);
-    values.put("name", name);
+    values.put("NAME", name);
     int id = getDatabase().insert("projects", values);
     
     return new Project(id, name);
