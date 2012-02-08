@@ -4,58 +4,20 @@
  */
 package edu.vanderbilt.mc.biostat.tracker;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class DatabaseTest {
-
-  private String databasePath;
+public class DatabaseTest extends TestCase {
 
   public DatabaseTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-    try {
-      File tempFile = File.createTempFile("tracker", ".db");
-      tempFile.deleteOnExit();
-      databasePath = tempFile.getAbsolutePath();
-    } catch (IOException ex) {
-      Assert.fail("Couldn't create temporary file: " + ex.toString());
-    }
-  }
-
-  @After
-  public void tearDown() {
-  }
-
-  private Database getDatabase() {
-    return new Database(databasePath);
-  }
-
-  private Connection getConnection() {
-    Connection conn = null;
-    try {
-      Class.forName("org.h2.Driver");
-      conn = DriverManager.getConnection("jdbc:h2:" + databasePath);
-    } catch (Exception ex) {
-      Assert.fail("Couldn't open H2 connection: " + ex.toString());
-    }
-    return conn;
   }
 
   @Test
