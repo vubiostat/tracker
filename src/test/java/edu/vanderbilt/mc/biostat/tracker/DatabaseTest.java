@@ -7,10 +7,9 @@ package edu.vanderbilt.mc.biostat.tracker;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.*;
 
 public class DatabaseTest {
@@ -61,6 +60,7 @@ public class DatabaseTest {
   @Test
   public void createTablesOnFirstUse() {
     Database db = getDatabase();
+    Assert.assertEquals(0, db.getSchemaVersion());
     db.close();
 
     Set expectedTables = new HashSet<String>();
@@ -81,5 +81,32 @@ public class DatabaseTest {
     }
 
     Assert.assertEquals(expectedTables, actualTables);
+  }
+
+  @Test
+  public void insertingRecords() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("name", "foo");
+    int id_1 = db.insert("projects", values);
+    Assert.assertEquals(1, id_1);
+    
+    values.put("name", "bar");
+    int id_2 = db.insert("projects", values);
+    Assert.assertEquals(2, id_2);
+
+    db.close();
+
+    Connection conn = getConnection();
+    try {
+      Statement stmt = conn.createStatement();
+      ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS num FROM projects WHERE id IN (" + id_1 + ", " + id_2 + ")");
+      while (rs.next()) {
+        Assert.assertEquals(2, rs.getInt("num"));
+      }
+    } catch (SQLException ex) {
+      Assert.fail("Couldn't get count: " + ex.toString());
+    }
   }
 }

@@ -1,18 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.io.File;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author stephej1
- */
 public class Database {
 
   private static Database _instance;
@@ -60,6 +55,43 @@ public class Database {
     
     return(version);
   }
+  
+  public int insert(String tableName, HashMap<String, Object> attributes) {
+    int result = 0;
+    String query = "INSERT INTO " + tableName + " (";
+    String predicate = "VALUES (";
+    Set keys = attributes.keySet();
+    for (Iterator i = keys.iterator(); i.hasNext(); ) {
+      String key = (String) i.next();
+      if (i.hasNext()) {
+        query += key + ", ";
+        predicate += "?, ";
+      }
+      else {
+        query += key + ") ";
+        predicate += "?)";
+      }
+    }
+    query += predicate;
+    
+    try {
+      PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+      int index = 1;
+      for (Object value : attributes.values()) {
+        stmt.setObject(index++, value);
+      }
+      stmt.executeUpdate();
+      
+      ResultSet rs = stmt.getGeneratedKeys();
+      while (rs.next()) {
+        result = rs.getInt(1);
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+      result = -1;
+    }
+    return result;
+  }
 
   private File getSettingsDirectory() {
     String userHome = System.getProperty("user.home");
@@ -82,6 +114,7 @@ public class Database {
     } catch (ClassNotFoundException ex) {
       throw new DatabaseConnectionException("Couldn't find the H2 driver: " + ex.toString());
     }
+    
     try {
       conn = DriverManager.getConnection("jdbc:h2:" + databasePath);
     } catch (SQLException ex) {
@@ -94,8 +127,8 @@ public class Database {
       try {
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("CREATE TABLE schema_info (version INT); "
-                + "CREATE TABLE activities (id INT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP);"
-                + "CREATE TABLE projects (id INT PRIMARY KEY, name VARCHAR(255));"
+                + "CREATE TABLE activities (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP);"
+                + "CREATE TABLE projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
                 + "INSERT INTO schema_info (version) VALUES (0);");
       } catch (SQLException ex) {
         throw new DatabaseMigrationException("Couldn't migrate database: " + ex.toString());
