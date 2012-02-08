@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.*;
 
@@ -91,7 +92,7 @@ public class DatabaseTest {
     values.put("name", "foo");
     int id_1 = db.insert("projects", values);
     Assert.assertEquals(1, id_1);
-    
+
     values.put("name", "bar");
     int id_2 = db.insert("projects", values);
     Assert.assertEquals(2, id_2);
@@ -108,5 +109,54 @@ public class DatabaseTest {
     } catch (SQLException ex) {
       Assert.fail("Couldn't get count: " + ex.toString());
     }
+  }
+
+  @Test
+  public void findById() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo");
+    int id = db.insert("projects", values);
+    values.put("ID", id);
+
+    HashMap actualValues = db.findById("projects", id);
+    Assert.assertEquals(values, actualValues);
+  }
+
+  @Test
+  public void findAll() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo_1");
+    db.insert("projects", values);
+
+    values.put("NAME", "foo_2");
+    db.insert("projects", values);
+
+    values.put("NAME", "bar");
+    db.insert("projects", values);
+
+    List records = db.findAll("projects");
+    Assert.assertEquals(3, records.size());
+  }
+
+  @Test
+  public void findAllWithConditions() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo_1");
+    db.insert("projects", values);
+
+    values.put("NAME", "foo_2");
+    db.insert("projects", values);
+
+    values.put("NAME", "bar");
+    db.insert("projects", values);
+
+    List records = db.findAll("projects", "name LIKE ?", "foo%");
+    Assert.assertEquals(2, records.size());
   }
 }

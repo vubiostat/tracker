@@ -2,9 +2,7 @@ package edu.vanderbilt.mc.biostat.tracker;
 
 import java.io.File;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,14 +33,14 @@ public class Database {
     setupConnection();
     migrate();
   }
-  
+
   public void close() {
     try {
       conn.close();
     } catch (SQLException ex) {
     }
   }
-  
+
   public int getSchemaVersion() {
     int version = -1;
     try {
@@ -51,37 +49,37 @@ public class Database {
       while (rs.next()) {
         version = rs.getInt("version");
       }
-    } catch (SQLException ex) { }
-    
-    return(version);
+    } catch (SQLException ex) {
+    }
+
+    return (version);
   }
-  
-  public int insert(String tableName, HashMap<String, Object> attributes) {
+
+  public int insert(String tableName, HashMap<String, Object> values) {
     int result = 0;
     String query = "INSERT INTO " + tableName + " (";
     String predicate = "VALUES (";
-    Set keys = attributes.keySet();
-    for (Iterator i = keys.iterator(); i.hasNext(); ) {
+    Set keys = values.keySet();
+    for (Iterator i = keys.iterator(); i.hasNext();) {
       String key = (String) i.next();
       if (i.hasNext()) {
         query += key + ", ";
         predicate += "?, ";
-      }
-      else {
+      } else {
         query += key + ") ";
         predicate += "?)";
       }
     }
     query += predicate;
-    
+
     try {
       PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
       int index = 1;
-      for (Object value : attributes.values()) {
+      for (Object value : values.values()) {
         stmt.setObject(index++, value);
       }
       stmt.executeUpdate();
-      
+
       ResultSet rs = stmt.getGeneratedKeys();
       while (rs.next()) {
         result = rs.getInt(1);
@@ -91,6 +89,42 @@ public class Database {
       result = -1;
     }
     return result;
+  }
+
+  public HashMap findById(String tableName, int id) {
+    List records = findAll(tableName, "id = ?", id);
+    return records.size() > 0 ? (HashMap)records.get(0) : (HashMap)null;
+  }
+
+  public List findAll(String tableName) {
+    return findAll(tableName, null);
+  }
+  
+  public List findAll(String tableName, String conditions, Object... arguments) {
+    List records = new ArrayList<HashMap>();
+    try {
+      String query = "SELECT * FROM " + tableName;
+      if (conditions != null)
+        query += " WHERE " + conditions;
+      
+      PreparedStatement stmt = conn.prepareStatement(query);
+      for (int i = 0; i < arguments.length; i++) {
+        stmt.setObject(i + 1, arguments[i]);
+      }
+      
+      ResultSet rs = stmt.executeQuery();
+      ResultSetMetaData md = rs.getMetaData();
+      while (rs.next()) {
+        HashMap values = new HashMap<String, Object>();
+        for (int i = 1; i <= md.getColumnCount(); i++) {
+          values.put(md.getColumnName(i), rs.getObject(i));
+        }
+        records.add(values);
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return records;
   }
 
   private File getSettingsDirectory() {
@@ -114,14 +148,14 @@ public class Database {
     } catch (ClassNotFoundException ex) {
       throw new DatabaseConnectionException("Couldn't find the H2 driver: " + ex.toString());
     }
-    
+
     try {
       conn = DriverManager.getConnection("jdbc:h2:" + databasePath);
     } catch (SQLException ex) {
       throw new DatabaseConnectionException("Couldn't open the database: " + ex.toString());
     }
   }
-  
+
   private void migrate() {
     if (getSchemaVersion() == -1) {
       try {
