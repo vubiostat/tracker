@@ -22,6 +22,14 @@ public class Project extends Model {
     return new Project(values);
   }
 
+  public static Project findByName(String name) {
+    List<Project> records = findAll("name = ?", name);
+    if (records.size() > 0) {
+      return records.get(0);
+    }
+    return null;
+  }
+
   public static List findAll() {
     return findAll(null);
   }
@@ -47,6 +55,17 @@ public class Project extends Model {
     this.name = (String) attributes.get("NAME");
   }
 
+  public HashMap<String, Object> getAttributes() {
+    HashMap attributes = new HashMap<String, Object>(2);
+    attributes.put("ID", id);
+    attributes.put("NAME", name);
+    return attributes;
+  }
+
+  public boolean update() {
+    return getDatabase().update("projects", getAttributes());
+  }
+  
   @Override
   public boolean equals(Object other) {
     if (other instanceof Project) {

@@ -1,6 +1,7 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,5 +80,33 @@ public class ActivityTest extends TestCase {
     List activities = Activity.findAll("ended_at > ?", now);
     Assert.assertEquals(1, activities.size());
     Assert.assertEquals(activity_1, activities.get(0));
+  }
+
+  @Test
+  public void getAttributes() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    HashMap expected = new HashMap<String, Object>();
+    expected.put("ID", activity.id);
+    expected.put("PROJECT_ID", activity.projectId);
+    expected.put("NAME", activity.name);
+    expected.put("STARTED_AT", activity.startedAt);
+    expected.put("ENDED_AT", activity.endedAt);
+    Assert.assertEquals(expected, activity.getAttributes());
+  }
+
+  @Test
+  public void update() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+    
+    activity.name = "bar";
+    Assert.assertTrue(activity.update());
+    Assert.assertEquals(activity, Activity.findById(activity.id));
   }
 }

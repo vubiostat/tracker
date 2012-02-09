@@ -31,7 +31,6 @@ public class Database {
   public Database(String databasePath) {
     this.databasePath = databasePath;
     setupConnection();
-    migrate();
   }
 
   public void close() {
@@ -93,25 +92,26 @@ public class Database {
 
   public HashMap findById(String tableName, int id) {
     List records = findAll(tableName, "id = ?", id);
-    return records.size() > 0 ? (HashMap)records.get(0) : (HashMap)null;
+    return records.size() > 0 ? (HashMap) records.get(0) : (HashMap) null;
   }
 
   public List findAll(String tableName) {
     return findAll(tableName, null);
   }
-  
+
   public List findAll(String tableName, String conditions, Object... arguments) {
     List records = new ArrayList<HashMap>();
     try {
       String query = "SELECT * FROM " + tableName;
-      if (conditions != null)
+      if (conditions != null) {
         query += " WHERE " + conditions;
-      
+      }
+
       PreparedStatement stmt = conn.prepareStatement(query);
       for (int i = 0; i < arguments.length; i++) {
         stmt.setObject(i + 1, arguments[i]);
       }
-      
+
       ResultSet rs = stmt.executeQuery();
       ResultSetMetaData md = rs.getMetaData();
       while (rs.next()) {
@@ -125,6 +125,34 @@ public class Database {
       Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
     }
     return records;
+  }
+
+  public boolean update(String tableName, HashMap<String, Object> values) {
+    String query = "UPDATE " + tableName + " SET ";
+    values = (HashMap) values.clone();
+    int id = (Integer) values.remove("ID");
+    Set keys = values.keySet();
+
+    for (Iterator i = keys.iterator(); i.hasNext();) {
+      String key = (String) i.next();
+      query += i.hasNext() ? key + " = ?, " : key + " = ? ";
+    }
+    query += "WHERE ID = ?";
+    System.out.println(query);
+
+    List parameters = new ArrayList<Object>(values.values());
+    parameters.add(id);
+
+    try {
+      PreparedStatement stmt = conn.prepareStatement(query);
+      for (int i = 0; i < parameters.size(); i++) {
+        stmt.setObject(i + 1, parameters.get(i));
+      }
+      return stmt.executeUpdate() == 1;
+    } catch (SQLException ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+      return false;
+    }
   }
 
   private File getSettingsDirectory() {
@@ -154,6 +182,8 @@ public class Database {
     } catch (SQLException ex) {
       throw new DatabaseConnectionException("Couldn't open the database: " + ex.toString());
     }
+
+    migrate();
   }
 
   private void migrate() {

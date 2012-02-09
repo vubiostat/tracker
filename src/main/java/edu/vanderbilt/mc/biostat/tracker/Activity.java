@@ -26,11 +26,11 @@ public class Activity extends Model {
     return new Activity(values);
   }
 
-  public static List findAll() {
+  public static List<Activity> findAll() {
     return findAll(null);
   }
 
-  public static List findAll(String conditions, Object... arguments) {
+  public static List<Activity> findAll(String conditions, Object... arguments) {
     List<HashMap> records = getDatabase().findAll("activities", conditions, arguments);
     List activities = new ArrayList<Project>(records.size());
     for (HashMap attributes : records) {
@@ -38,7 +38,6 @@ public class Activity extends Model {
     }
     return activities;
   }
-
   public int id;
   public int projectId;
   public String name;
@@ -59,6 +58,20 @@ public class Activity extends Model {
     this.name = (String) attributes.get("NAME");
     this.startedAt = (Date) attributes.get("STARTED_AT");
     this.endedAt = (Date) attributes.get("ENDED_AT");
+  }
+
+  public HashMap<String, Object> getAttributes() {
+    HashMap attributes = new HashMap<String, Object>(5);
+    attributes.put("ID", id);
+    attributes.put("PROJECT_ID", projectId);
+    attributes.put("NAME", name);
+    attributes.put("STARTED_AT", startedAt);
+    attributes.put("ENDED_AT", endedAt);
+    return attributes;
+  }
+
+  public boolean update() {
+    return getDatabase().update("activities", getAttributes());
   }
 
   @Override

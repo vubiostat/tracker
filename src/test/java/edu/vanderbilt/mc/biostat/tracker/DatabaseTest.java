@@ -121,4 +121,21 @@ public class DatabaseTest extends TestCase {
     List records = db.findAll("projects", "name LIKE ?", "foo%");
     Assert.assertEquals(2, records.size());
   }
+
+  @Test
+  public void updatingARecord() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo");
+    int id = db.insert("projects", values);
+
+    values.put("ID", id);
+    values.put("NAME", "bar");
+    Assert.assertTrue(db.update("projects", values));
+    Assert.assertTrue(values.containsKey("ID"));
+
+    HashMap actualValues = db.findById("projects", id);
+    Assert.assertEquals(values, actualValues);
+  }
 }

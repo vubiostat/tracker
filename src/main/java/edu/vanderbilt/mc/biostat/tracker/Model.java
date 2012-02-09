@@ -1,5 +1,7 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
+import java.util.HashMap;
+
 public abstract class Model {
 
   private static Database db = null;
@@ -14,4 +16,7 @@ public abstract class Model {
     }
     return db;
   }
+  
+  abstract public HashMap<String, Object> getAttributes();
+  abstract boolean update();
 }
