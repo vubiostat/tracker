@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- *
- * @author stephej1
- */
 public class Project extends Model {
 
   public static Project create(String name) {
