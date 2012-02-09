@@ -39,4 +39,16 @@ public class ProjectTest extends TestCase {
     Assert.assertEquals(project_1, projects.get(0));
     Assert.assertEquals(project_2, projects.get(1));
   }
+
+  @Test
+  public void findAllWithConditions() {
+    Project project_1 = Project.create("foo_1");
+    Project project_2 = Project.create("foo_2");
+    Project project_3 = Project.create("bar");
+
+    List projects = Project.findAll("name LIKE ?", "foo%");
+    Assert.assertEquals(2, projects.size());
+    Assert.assertEquals(project_1, projects.get(0));
+    Assert.assertEquals(project_2, projects.get(1));
+  }
 }

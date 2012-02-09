@@ -27,13 +27,18 @@ public class Activity extends Model {
   }
 
   public static List findAll() {
-    List<HashMap> records = getDatabase().findAll("activities");
-    List Activitys = new ArrayList<Activity>(records.size());
-    for (HashMap attributes : records) {
-      Activitys.add(new Activity(attributes));
-    }
-    return Activitys;
+    return findAll(null);
   }
+
+  public static List findAll(String conditions, Object... arguments) {
+    List<HashMap> records = getDatabase().findAll("activities", conditions, arguments);
+    List activities = new ArrayList<Project>(records.size());
+    for (HashMap attributes : records) {
+      activities.add(new Activity(attributes));
+    }
+    return activities;
+  }
+
   public int id;
   public int projectId;
   public String name;
