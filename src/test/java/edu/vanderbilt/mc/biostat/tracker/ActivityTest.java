@@ -190,4 +190,19 @@ public class ActivityTest extends TestCase {
     expectedTags.add(tag_2);
     Assert.assertEquals(expectedTags, activity.getTags());
   }
+
+  @Test
+  public void getTagNames() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    Tag tag_1 = Tag.create("stuff");
+    Tag tag_2 = Tag.create("junk");
+    activity.addTag(tag_1);
+    activity.addTag(tag_2);
+    
+    Assert.assertEquals("stuff, junk", activity.getTagNames());
+  }
 }

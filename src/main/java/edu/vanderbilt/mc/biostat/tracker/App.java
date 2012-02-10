@@ -16,20 +16,33 @@ public class App {
   public void start() {
     window.setVisible(true);
   }
-  
+
   public Activity startActivity(String fullName, String tags) {
     String[] nameParts = fullName.split("@", 2);
     String activityName = nameParts[0];
     String projectName = nameParts.length == 1 ? "unsorted" : nameParts[1];
-    
+
     Project project = Project.findByName(projectName);
     if (project == null) {
       project = Project.create(projectName);
     }
-    
-    return Activity.create(project.id, activityName, new Date(), null);
+
+    Activity activity = Activity.create(project.id, activityName, new Date(), null);
+
+    if (tags != null) {
+      String[] tagNames = tags.split(", *");
+      for (String tagName : tagNames) {
+        Tag tag = Tag.findByName(tagName);
+        if (tag == null) {
+          tag = Tag.create(tagName);
+        }
+        activity.addTag(tag);
+      }
+    }
+
+    return activity;
   }
-  
+
   public boolean stopActivity(Activity activity) {
     activity.endedAt = new Date();
     return activity.update();

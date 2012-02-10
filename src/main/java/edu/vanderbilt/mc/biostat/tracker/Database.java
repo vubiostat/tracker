@@ -238,13 +238,14 @@ public class Database {
       switch (version) {
         case -1:
           query = "CREATE TABLE schema_info (version INT); "
-                  + "CREATE TABLE activities (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP);"
-                  + "CREATE TABLE projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
+                  + "CREATE TABLE activities (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP); "
+                  + "CREATE TABLE projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255)); "
                   + "INSERT INTO schema_info (version) VALUES (0);";
           break;
         case 0:
-          query = "CREATE TABLE tags (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
-                  + "CREATE TABLE activities_tags (activity_id INT, tag_id INT);";
+          query = "CREATE TABLE tags (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255)); "
+                  + "CREATE TABLE activities_tags (activity_id INT, tag_id INT); "
+                  + "UPDATE schema_info SET version = 1;";
           break;
         default:
           break mainloop;

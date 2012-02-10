@@ -57,7 +57,7 @@ public class Window extends javax.swing.JFrame {
         txtTags = new javax.swing.JTextField();
         btnStartTracking = new javax.swing.JButton();
         scrlToday = new javax.swing.JScrollPane();
-        lstToday = new javax.swing.JList();
+        tblToday = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Time Tracker");
@@ -160,12 +160,9 @@ public class Window extends javax.swing.JFrame {
 
         scrlToday.setBackground(new java.awt.Color(255, 255, 255));
 
-        lstToday.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        scrlToday.setViewportView(lstToday);
+        tblToday.setModel(new ActivityTableModel());
+        tblToday.getTableHeader().setReorderingAllowed(false);
+        scrlToday.setViewportView(tblToday);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -194,7 +191,12 @@ public class Window extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
   private void btnStartTrackingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnStartTrackingMouseClicked
-    Activity activity = parent.startActivity(txtActivity.getText(), null);
+    if (!activityNameEntered) {
+      return;
+    }
+    
+    String tagNames = activityTagsEntered ? txtTags.getText() : null;
+    Activity activity = parent.startActivity(txtActivity.getText(), tagNames);
     if (activity != null) {
       currentActivity = activity;
       updateCurrentActivity();
@@ -238,10 +240,10 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JButton btnStopTracking;
     private javax.swing.JLabel lblCurrentActivity;
     private javax.swing.JLabel lblCurrentTime;
-    private javax.swing.JList lstToday;
     private javax.swing.JPanel pnlCurrentActivity;
     private javax.swing.JPanel pnlNewActivity;
     private javax.swing.JScrollPane scrlToday;
+    private javax.swing.JTable tblToday;
     private javax.swing.JTextField txtActivity;
     private javax.swing.JTextField txtTags;
     // End of variables declaration//GEN-END:variables

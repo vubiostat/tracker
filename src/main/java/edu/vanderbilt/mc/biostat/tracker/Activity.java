@@ -96,13 +96,25 @@ public class Activity extends Model {
     return tags;
   }
 
+  public String getTagNames() {
+    List<Tag> tags = getTags();
+    String tagNames = "";
+    for (Iterator i = tags.iterator(); i.hasNext();) {
+      tagNames += ((Tag) i.next()).name;
+      if (i.hasNext()) {
+        tagNames += ", ";
+      }
+    }
+    return tagNames;
+  }
+
   public void addTag(Tag tag) {
     HashMap values = new HashMap<String, Object>(2);
     values.put("ACTIVITY_ID", id);
     values.put("TAG_ID", tag.id);
     getDatabase().insert("activities_tags", values);
   }
-  
+
   public void removeTag(Tag tag) {
     getDatabase().delete("activities_tags", "activity_id = ? AND tag_id = ?", id, tag.id);
   }
