@@ -138,7 +138,6 @@ public class Database {
       query += i.hasNext() ? key + " = ?, " : key + " = ? ";
     }
     query += "WHERE ID = ?";
-    System.out.println(query);
 
     List parameters = new ArrayList<Object>(values.values());
     parameters.add(id);

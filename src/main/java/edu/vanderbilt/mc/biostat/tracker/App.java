@@ -29,4 +29,9 @@ public class App {
     
     return Activity.create(project.id, activityName, new Date(), null);
   }
+  
+  public boolean stopActivity(Activity activity) {
+    activity.endedAt = new Date();
+    return activity.update();
+  }
 }

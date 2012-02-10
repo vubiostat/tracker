@@ -35,4 +35,11 @@ public class AppTest extends TestCase {
     Activity foundActivity = Activity.findById(activity.id);
     Assert.assertEquals(activity, foundActivity);
   }
+  
+  @Test
+  public void stopActivity() {
+    Activity activity = app.startActivity("foo@bar", null);
+    app.stopActivity(activity);
+    Assert.assertNotNull(activity.endedAt);
+  }
 }

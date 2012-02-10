@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 public class Window extends javax.swing.JFrame {
 
   private App parent;
+  private Activity currentActivity;
   private boolean activityNameEntered = false;
   private boolean activityTagsEntered = false;
 
@@ -25,6 +26,16 @@ public class Window extends javax.swing.JFrame {
     if (!activityTagsEntered) {
       txtTags.setForeground(Color.gray);
       txtTags.setText("Tags");
+    }
+  }
+
+  private void updateCurrentActivity() {
+    if (currentActivity == null) {
+      lblCurrentActivity.setText("No activity");
+      btnStopTracking.setEnabled(false);
+    } else {
+      lblCurrentActivity.setText(currentActivity.name);
+      btnStopTracking.setEnabled(true);
     }
   }
 
@@ -185,8 +196,8 @@ public class Window extends javax.swing.JFrame {
   private void btnStartTrackingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnStartTrackingMouseClicked
     Activity activity = parent.startActivity(txtActivity.getText(), null);
     if (activity != null) {
-      lblCurrentActivity.setText(activity.name);
-      btnStopTracking.setEnabled(true);
+      currentActivity = activity;
+      updateCurrentActivity();
 
       activityNameEntered = activityTagsEntered = false;
       updateActivityForm();
@@ -194,7 +205,9 @@ public class Window extends javax.swing.JFrame {
   }//GEN-LAST:event_btnStartTrackingMouseClicked
 
   private void btnStopTrackingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnStopTrackingMouseClicked
-    // TODO add your handling code here:
+    parent.stopActivity(currentActivity);
+    currentActivity = null;
+    updateCurrentActivity();
   }//GEN-LAST:event_btnStopTrackingMouseClicked
 
   private void txtActivityFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtActivityFocusGained
@@ -220,7 +233,6 @@ public class Window extends javax.swing.JFrame {
     activityTagsEntered = !txtTags.getText().isEmpty();
     updateActivityForm();
   }//GEN-LAST:event_txtTagsFocusLost
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnStartTracking;
     private javax.swing.JButton btnStopTracking;
