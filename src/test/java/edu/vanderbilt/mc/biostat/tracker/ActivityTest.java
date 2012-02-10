@@ -1,5 +1,6 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +154,40 @@ public class ActivityTest extends TestCase {
     Date startedAt = new Date(now.getTime() - 60000);
     Date endedAt = new Date(now.getTime() + 60000);
     Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
-    
+
     Assert.assertEquals(120000, activity.getDuration());
+  }
+
+  @Test
+  public void addTag() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    Tag tag = Tag.create("stuff");
+    activity.addTag(tag);
+
+    List expectedTags = new ArrayList<Tag>(1);
+    expectedTags.add(tag);
+    Assert.assertEquals(expectedTags, activity.getTags());
+  }
+
+  @Test
+  public void removeTag() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    Tag tag_1 = Tag.create("stuff");
+    Tag tag_2 = Tag.create("junk");
+    activity.addTag(tag_1);
+    activity.addTag(tag_2);
+    activity.removeTag(tag_1);
+
+    List expectedTags = new ArrayList<Tag>(1);
+    expectedTags.add(tag_2);
+    Assert.assertEquals(expectedTags, activity.getTags());
   }
 }

@@ -142,7 +142,7 @@ public class DatabaseTest extends TestCase {
   }
 
   @Test
-  public void countWithoutConditions() {
+  public void countWithConditions() {
     Database db = getDatabase();
 
     HashMap values = new HashMap<String, Object>();
@@ -159,7 +159,7 @@ public class DatabaseTest extends TestCase {
   }
 
   @Test
-  public void countWithConditions() {
+  public void countWithoutConditions() {
     Database db = getDatabase();
     Assert.assertEquals(0, db.count("projects"));
 
@@ -167,6 +167,24 @@ public class DatabaseTest extends TestCase {
     values.put("NAME", "foo");
     int id = db.insert("projects", values);
 
+    Assert.assertEquals(1, db.count("projects"));
+  }
+
+  @Test
+  public void deleteWithConditions() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo_1");
+    db.insert("projects", values);
+
+    values.put("NAME", "foo_2");
+    db.insert("projects", values);
+
+    values.put("NAME", "bar");
+    db.insert("projects", values);
+
+    db.delete("projects", "name LIKE ?", "foo%");
     Assert.assertEquals(1, db.count("projects"));
   }
 }

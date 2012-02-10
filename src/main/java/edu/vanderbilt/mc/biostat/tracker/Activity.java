@@ -1,9 +1,6 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Activity extends Model {
 
@@ -42,7 +39,7 @@ public class Activity extends Model {
   public static int count() {
     return count(null);
   }
-  
+
   public static int count(String conditions, Object... arguments) {
     return getDatabase().count("activities", conditions, arguments);
   }
@@ -81,7 +78,7 @@ public class Activity extends Model {
   public boolean update() {
     return getDatabase().update("activities", getAttributes());
   }
-  
+
   public Project getProject() {
     return Project.findById(projectId);
   }
@@ -89,7 +86,27 @@ public class Activity extends Model {
   public long getDuration() {
     return endedAt.getTime() - startedAt.getTime();
   }
+
+  public List<Tag> getTags() {
+    List<HashMap> rows = getDatabase().findAll("activities_tags", "activity_id = ?", id);
+    List<Tag> tags = new ArrayList<Tag>(rows.size());
+    for (HashMap<String, Object> row : rows) {
+      tags.add(Tag.findById((Integer) row.get("TAG_ID")));
+    }
+    return tags;
+  }
+
+  public void addTag(Tag tag) {
+    HashMap values = new HashMap<String, Object>(2);
+    values.put("ACTIVITY_ID", id);
+    values.put("TAG_ID", tag.id);
+    getDatabase().insert("activities_tags", values);
+  }
   
+  public void removeTag(Tag tag) {
+    getDatabase().delete("activities_tags", "activity_id = ? AND tag_id = ?", id, tag.id);
+  }
+
   @Override
   public boolean equals(Object other) {
     if (other instanceof Activity) {

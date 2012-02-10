@@ -180,6 +180,25 @@ public class Database {
     return -1;
   }
 
+  public int delete(String tableName, String conditions, Object... arguments) {
+    try {
+      String query = "DELETE FROM " + tableName;
+      if (conditions != null) {
+        query += " WHERE " + conditions;
+      }
+
+      PreparedStatement stmt = conn.prepareStatement(query);
+      for (int i = 0; i < arguments.length; i++) {
+        stmt.setObject(i + 1, arguments[i]);
+      }
+
+      return stmt.executeUpdate();
+    } catch (SQLException ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+
   private File getSettingsDirectory() {
     String userHome = System.getProperty("user.home");
     if (userHome == null) {
