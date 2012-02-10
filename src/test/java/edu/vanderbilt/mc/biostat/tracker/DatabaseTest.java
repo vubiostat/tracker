@@ -29,6 +29,8 @@ public class DatabaseTest extends TestCase {
     Set expectedTables = new HashSet<String>();
     expectedTables.add("ACTIVITIES");
     expectedTables.add("PROJECTS");
+    expectedTables.add("TAGS");
+    expectedTables.add("ACTIVITIES_TAGS");
     expectedTables.add("SCHEMA_INFO");
 
     Set actualTables = new HashSet<String>();
@@ -137,5 +139,34 @@ public class DatabaseTest extends TestCase {
 
     HashMap actualValues = db.findById("projects", id);
     Assert.assertEquals(values, actualValues);
+  }
+
+  @Test
+  public void countWithoutConditions() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo_1");
+    db.insert("projects", values);
+
+    values.put("NAME", "foo_2");
+    db.insert("projects", values);
+
+    values.put("NAME", "bar");
+    db.insert("projects", values);
+
+    Assert.assertEquals(2, db.count("projects", "name LIKE ?", "foo%"));
+  }
+
+  @Test
+  public void countWithConditions() {
+    Database db = getDatabase();
+    Assert.assertEquals(0, db.count("projects"));
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo");
+    int id = db.insert("projects", values);
+
+    Assert.assertEquals(1, db.count("projects"));
   }
 }

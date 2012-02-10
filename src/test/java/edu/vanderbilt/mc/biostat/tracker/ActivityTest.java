@@ -25,8 +25,8 @@ public class ActivityTest extends TestCase {
   @Test
   public void createActivity() {
     Date now = new Date();
-    Date startedAt = new Date(now.getTime() - 60);
-    Date endedAt = new Date(now.getTime() + 60);
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
     Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
 
     Assert.assertEquals(1, activity.id);
@@ -39,8 +39,8 @@ public class ActivityTest extends TestCase {
   @Test
   public void findActivityById() {
     Date now = new Date();
-    Date startedAt = new Date(now.getTime() - 60);
-    Date endedAt = new Date(now.getTime() + 60);
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
     Activity activity_1 = Activity.create(project.id, "foo", startedAt, endedAt);
 
     Activity activity_2 = Activity.findById(activity_1.id);
@@ -73,8 +73,8 @@ public class ActivityTest extends TestCase {
     Date endedAt_1 = new Date(now.getTime() + 60000);
     Activity activity_1 = Activity.create(project.id, "foo", startedAt_1, endedAt_1);
 
-    Date startedAt_2 = new Date(now.getTime() - 600);
-    Date endedAt_2 = new Date(now.getTime() - 540);
+    Date startedAt_2 = new Date(now.getTime() - 600000);
+    Date endedAt_2 = new Date(now.getTime() - 540000);
     Activity activity_2 = Activity.create(project.id, "bar", startedAt_2, endedAt_2);
 
     List activities = Activity.findAll("ended_at > ?", now);
@@ -104,9 +104,56 @@ public class ActivityTest extends TestCase {
     Date startedAt = new Date(now.getTime() - 60000);
     Date endedAt = new Date(now.getTime() + 60000);
     Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
-    
+
     activity.name = "bar";
     Assert.assertTrue(activity.update());
     Assert.assertEquals(activity, Activity.findById(activity.id));
+  }
+
+  @Test
+  public void countWithoutConditions() {
+    Assert.assertEquals(0, Activity.count());
+
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    Assert.assertEquals(1, Activity.count());
+  }
+
+  @Test
+  public void countWithConditions() {
+    Date now = new Date();
+
+    Date startedAt_1 = new Date(now.getTime() - 60000);
+    Date endedAt_1 = new Date(now.getTime() + 60000);
+    Activity activity_1 = Activity.create(project.id, "foo", startedAt_1, endedAt_1);
+
+    Date startedAt_2 = new Date(now.getTime() - 600000);
+    Date endedAt_2 = new Date(now.getTime() - 540000);
+    Activity activity_2 = Activity.create(project.id, "bar", startedAt_2, endedAt_2);
+
+    Assert.assertEquals(1, Activity.count("ended_at > ?", now));
+  }
+
+  @Test
+  public void getProject() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+
+    Assert.assertEquals(project, activity.getProject());
+  }
+
+  @Test
+  public void getDuration() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+    
+    Assert.assertEquals(120000, activity.getDuration());
   }
 }

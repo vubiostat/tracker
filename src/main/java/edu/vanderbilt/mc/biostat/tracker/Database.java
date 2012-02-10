@@ -154,6 +154,32 @@ public class Database {
     }
   }
 
+  public int count(String tableName) {
+    return count(tableName, null);
+  }
+
+  public int count(String tableName, String conditions, Object... arguments) {
+    try {
+      String query = "SELECT COUNT(*) FROM " + tableName;
+      if (conditions != null) {
+        query += " WHERE " + conditions;
+      }
+
+      PreparedStatement stmt = conn.prepareStatement(query);
+      for (int i = 0; i < arguments.length; i++) {
+        stmt.setObject(i + 1, arguments[i]);
+      }
+
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) {
+        return rs.getInt(1);
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+
   private File getSettingsDirectory() {
     String userHome = System.getProperty("user.home");
     if (userHome == null) {
@@ -186,15 +212,29 @@ public class Database {
   }
 
   private void migrate() {
-    if (getSchemaVersion() == -1) {
+    mainloop:
+    for (int version = getSchemaVersion();; version++) {
+      String query = null;
+
+      switch (version) {
+        case -1:
+          query = "CREATE TABLE schema_info (version INT); "
+                  + "CREATE TABLE activities (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP);"
+                  + "CREATE TABLE projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
+                  + "INSERT INTO schema_info (version) VALUES (0);";
+          break;
+        case 0:
+          query = "CREATE TABLE tags (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
+                  + "CREATE TABLE activities_tags (activity_id INT, tag_id INT);";
+          break;
+        default:
+          break mainloop;
+      }
       try {
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate("CREATE TABLE schema_info (version INT); "
-                + "CREATE TABLE activities (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), project_id INT, started_at TIMESTAMP, ended_at TIMESTAMP);"
-                + "CREATE TABLE projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));"
-                + "INSERT INTO schema_info (version) VALUES (0);");
+        stmt.executeUpdate(query);
       } catch (SQLException ex) {
-        throw new DatabaseMigrationException("Couldn't migrate database: " + ex.toString());
+        throw new DatabaseMigrationException("Couldn't migrate database from version " + version + ": " + ex.toString());
       }
     }
   }

@@ -38,6 +38,14 @@ public class Activity extends Model {
     }
     return activities;
   }
+
+  public static int count() {
+    return count(null);
+  }
+  
+  public static int count(String conditions, Object... arguments) {
+    return getDatabase().count("activities", conditions, arguments);
+  }
   public int id;
   public int projectId;
   public String name;
@@ -73,7 +81,15 @@ public class Activity extends Model {
   public boolean update() {
     return getDatabase().update("activities", getAttributes());
   }
+  
+  public Project getProject() {
+    return Project.findById(projectId);
+  }
 
+  public long getDuration() {
+    return endedAt.getTime() - startedAt.getTime();
+  }
+  
   @Override
   public boolean equals(Object other) {
     if (other instanceof Activity) {
