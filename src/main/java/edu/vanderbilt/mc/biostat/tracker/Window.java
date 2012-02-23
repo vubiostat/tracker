@@ -1,7 +1,6 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 
 public class Window extends javax.swing.JFrame {
 
@@ -57,22 +56,28 @@ public class Window extends javax.swing.JFrame {
         txtTags = new javax.swing.JTextField();
         btnStartTracking = new javax.swing.JButton();
         scrlToday = new javax.swing.JScrollPane();
-        tblToday = new javax.swing.JTable();
+        tblToday = new edu.vanderbilt.mc.biostat.tracker.ActivityTable();
+        lblToday = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Time Tracker");
 
+        pnlCurrentActivity.setFont(pnlCurrentActivity.getFont());
+
+        btnStopTracking.setFont(btnStopTracking.getFont());
         btnStopTracking.setText("Stop tracking");
         btnStopTracking.setEnabled(false);
         btnStopTracking.setPreferredSize(new java.awt.Dimension(135, 25));
-        btnStopTracking.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnStopTrackingMouseClicked(evt);
+        btnStopTracking.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopTrackingActionPerformed(evt);
             }
         });
 
-        lblCurrentActivity.setFont(lblCurrentActivity.getFont().deriveFont(lblCurrentActivity.getFont().getSize()+6f));
+        lblCurrentActivity.setFont(lblCurrentActivity.getFont().deriveFont(lblCurrentActivity.getFont().getSize()+4f));
         lblCurrentActivity.setText("No activity");
+
+        lblCurrentTime.setFont(lblCurrentTime.getFont());
 
         javax.swing.GroupLayout pnlCurrentActivityLayout = new javax.swing.GroupLayout(pnlCurrentActivity);
         pnlCurrentActivity.setLayout(pnlCurrentActivityLayout);
@@ -101,7 +106,9 @@ public class Window extends javax.swing.JFrame {
                 .addGap(21, 21, 21))
         );
 
-        txtActivity.setFont(txtActivity.getFont().deriveFont(txtActivity.getFont().getSize()+4f));
+        pnlNewActivity.setFont(pnlNewActivity.getFont());
+
+        txtActivity.setFont(txtActivity.getFont().deriveFont(txtActivity.getFont().getSize()+3f));
         txtActivity.setForeground(java.awt.Color.gray);
         txtActivity.setText("Activity");
         txtActivity.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -114,7 +121,7 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        txtTags.setFont(txtTags.getFont().deriveFont(txtTags.getFont().getSize()+4f));
+        txtTags.setFont(txtTags.getFont().deriveFont(txtTags.getFont().getSize()+3f));
         txtTags.setForeground(java.awt.Color.gray);
         txtTags.setText("Tags");
         txtTags.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -127,11 +134,12 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
+        btnStartTracking.setFont(btnStartTracking.getFont());
         btnStartTracking.setText("Start tracking");
         btnStartTracking.setPreferredSize(new java.awt.Dimension(135, 25));
-        btnStartTracking.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnStartTrackingMouseClicked(evt);
+        btnStartTracking.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartTrackingActionPerformed(evt);
             }
         });
 
@@ -159,10 +167,20 @@ public class Window extends javax.swing.JFrame {
         );
 
         scrlToday.setBackground(new java.awt.Color(255, 255, 255));
+        scrlToday.setFont(scrlToday.getFont());
 
         tblToday.setModel(new ActivityTableModel());
-        tblToday.getTableHeader().setReorderingAllowed(false);
+        tblToday.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblToday.setDoubleBuffered(true);
+        tblToday.setEditable(false);
+        tblToday.setShowHorizontalLines(false);
+        tblToday.setShowVerticalLines(false);
+        tblToday.setSortable(false);
+        tblToday.setTableHeader(null);
         scrlToday.setViewportView(tblToday);
+
+        lblToday.setFont(lblToday.getFont().deriveFont(lblToday.getFont().getStyle() | java.awt.Font.BOLD));
+        lblToday.setText("Today");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,9 +188,13 @@ public class Window extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnlNewActivity, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pnlCurrentActivity, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrlToday)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrlToday)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblToday)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -183,34 +205,16 @@ public class Window extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnlNewActivity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scrlToday, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+                .addComponent(lblToday)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrlToday, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
+        System.out.println(lblToday.getUI().getClass().getName());
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-  private void btnStartTrackingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnStartTrackingMouseClicked
-    if (!activityNameEntered) {
-      return;
-    }
-    
-    String tagNames = activityTagsEntered ? txtTags.getText() : null;
-    Activity activity = parent.startActivity(txtActivity.getText(), tagNames);
-    if (activity != null) {
-      currentActivity = activity;
-      updateCurrentActivity();
-
-      activityNameEntered = activityTagsEntered = false;
-      updateActivityForm();
-    }
-  }//GEN-LAST:event_btnStartTrackingMouseClicked
-
-  private void btnStopTrackingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnStopTrackingMouseClicked
-    parent.stopActivity(currentActivity);
-    currentActivity = null;
-    updateCurrentActivity();
-  }//GEN-LAST:event_btnStopTrackingMouseClicked
 
   private void txtActivityFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtActivityFocusGained
     if (!activityNameEntered) {
@@ -235,15 +239,46 @@ public class Window extends javax.swing.JFrame {
     activityTagsEntered = !txtTags.getText().isEmpty();
     updateActivityForm();
   }//GEN-LAST:event_txtTagsFocusLost
+
+  private void btnStartTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartTrackingActionPerformed
+    if (!activityNameEntered) {
+      return;
+    }
+
+    String tagNames = activityTagsEntered ? txtTags.getText() : null;
+    Activity activity = parent.startActivity(txtActivity.getText(), tagNames);
+    if (activity != null) {
+      if (currentActivity != null) {
+        parent.stopActivity(currentActivity);
+      }
+      currentActivity = activity;
+      updateCurrentActivity();
+
+      activityNameEntered = activityTagsEntered = false;
+      updateActivityForm();
+
+      ((ActivityTableModel) tblToday.getModel()).updateActivities();
+    }
+  }//GEN-LAST:event_btnStartTrackingActionPerformed
+
+  private void btnStopTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopTrackingActionPerformed
+    parent.stopActivity(currentActivity);
+    currentActivity = null;
+    updateCurrentActivity();
+
+    ((ActivityTableModel) tblToday.getModel()).updateActivities();
+  }//GEN-LAST:event_btnStopTrackingActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnStartTracking;
     private javax.swing.JButton btnStopTracking;
     private javax.swing.JLabel lblCurrentActivity;
     private javax.swing.JLabel lblCurrentTime;
+    private javax.swing.JLabel lblToday;
     private javax.swing.JPanel pnlCurrentActivity;
     private javax.swing.JPanel pnlNewActivity;
     private javax.swing.JScrollPane scrlToday;
-    private javax.swing.JTable tblToday;
+    private edu.vanderbilt.mc.biostat.tracker.ActivityTable tblToday;
     private javax.swing.JTextField txtActivity;
     private javax.swing.JTextField txtTags;
     // End of variables declaration//GEN-END:variables

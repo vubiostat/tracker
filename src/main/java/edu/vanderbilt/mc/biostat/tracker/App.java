@@ -1,10 +1,27 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
 
 public class App {
 
   public static void main(String[] args) {
+    // set look and feel
+    String os = System.getProperty("os.name");
+    String lafName;
+    if (os.equals("Linux")) {
+      lafName = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+    } else {
+      lafName = UIManager.getSystemLookAndFeelClassName();
+    }
+    try {
+      UIManager.setLookAndFeel(lafName);
+    } catch (Exception ex) {
+      Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     new App().start();
   }
   private Window window;

@@ -23,7 +23,7 @@ public class DatabaseTest extends TestCase {
   @Test
   public void createTablesOnFirstUse() {
     Database db = getDatabase();
-    Assert.assertEquals(0, db.getSchemaVersion());
+    Assert.assertEquals(1, db.getSchemaVersion());
     db.close();
 
     Set expectedTables = new HashSet<String>();

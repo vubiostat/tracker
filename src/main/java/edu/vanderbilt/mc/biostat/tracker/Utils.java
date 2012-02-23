@@ -1,8 +1,10 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class Utils {
 
@@ -14,6 +16,10 @@ public class Utils {
     Calendar cal = todayCalendar();
     cal.add(Calendar.DAY_OF_MONTH, 1);
     return cal.getTime();
+  }
+  
+  public static String shortTime(Date d) {
+    return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(d);
   }
 
   private static Calendar todayCalendar() {

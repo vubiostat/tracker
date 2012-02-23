@@ -1,72 +1,83 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.table.AbstractTableModel;
 
 public class ActivityTableModel extends AbstractTableModel {
 
   private Date start, end;
+  private List<Activity> activities;
 
   public ActivityTableModel() {
-    super();
-    this.start = Utils.today();
-    this.end = Utils.tomorrow();
+    this(Utils.today(), Utils.tomorrow());
   }
-  
+
   public ActivityTableModel(Date start, Date end) {
     super();
     this.start = start;
     this.end = end;
+    updateActivities();
   }
 
   public int getRowCount() {
-    return Activity.count("started_at >= ? AND ended_at < ?", start, end);
+    return activities.size();
   }
 
   public int getColumnCount() {
-    return 6;
+    return 7;
   }
 
   @Override
   public String getColumnName(int column) {
     switch (column) {
       case 0:
-        return "Activity";
-      case 1:
-        return "Project";
-      case 2:
-        return "Tags";
-      case 3:
         return "Started";
-      case 4:
+      case 1:
+        return "";
+      case 2:
         return "Ended";
+      case 3:
+        return "Activity";
+      case 4:
+        return "Project";
       case 5:
+        return "Tags";
+      case 6:
         return "Time";
     }
     return null;
   }
 
   public Object getValueAt(int row, int column) {
-    Activity activity = getActivities().get(row);
+    Activity activity = activities.get(row);
     switch (column) {
       case 0:
-        return activity.name;
+        return Utils.shortTime(activity.startedAt);
       case 1:
-        return activity.getProject().name;
+        return "-";
       case 2:
-        return activity.getTagNames();
+        if (activity.endedAt != null) {
+          return Utils.shortTime(activity.endedAt);
+        }
+        return "";
+
       case 3:
-        return activity.startedAt;
+        return activity.name;
       case 4:
-        return activity.endedAt;
+        return activity.getProject().name;
       case 5:
-        return activity.getDuration();
+        return activity.getTagNames();
+      case 6:
+        return activity.getDurationString();
     }
     return null;
   }
 
-  private List<Activity> getActivities() {
-    return Activity.findAll("started_at >= ? AND ended_at < ?", start, end);
+  public void updateActivities() {
+    activities = Activity.findAll("started_at >= ? AND (ended_at IS NULL OR ended_at < ?)", start, end);
+    fireTableDataChanged();
   }
 }

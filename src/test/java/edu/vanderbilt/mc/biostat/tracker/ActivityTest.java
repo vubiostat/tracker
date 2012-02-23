@@ -159,6 +159,16 @@ public class ActivityTest extends TestCase {
   }
 
   @Test
+  public void getDurationForRunningActivity() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, null);
+
+    long diff = Math.abs(activity.getDuration() - 60000L);
+    Assert.assertTrue("Difference was too great: " + diff, diff <= 50);
+  }
+
+  @Test
   public void addTag() {
     Date now = new Date();
     Date startedAt = new Date(now.getTime() - 60000);
@@ -202,7 +212,7 @@ public class ActivityTest extends TestCase {
     Tag tag_2 = Tag.create("junk");
     activity.addTag(tag_1);
     activity.addTag(tag_2);
-    
+
     Assert.assertEquals("stuff, junk", activity.getTagNames());
   }
 }

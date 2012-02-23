@@ -84,7 +84,19 @@ public class Activity extends Model {
   }
 
   public long getDuration() {
-    return endedAt.getTime() - startedAt.getTime();
+    Date end = endedAt == null ? new Date() : endedAt;
+    return end.getTime() - startedAt.getTime();
+  }
+  
+  public String getDurationString() {
+    long duration = getDuration();
+    long minutes = duration / 60000;
+    long hours = minutes / 60;
+    minutes %= 60;
+    if (hours > 0) {
+      return String.format("%1$sh %2$smin", hours, minutes);
+    }
+    return String.format("%1$smin", minutes);
   }
 
   public List<Tag> getTags() {
