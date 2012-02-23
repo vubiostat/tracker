@@ -127,30 +127,36 @@ public class Database {
     return records;
   }
 
-  public boolean update(String tableName, HashMap<String, Object> values) {
-    String query = "UPDATE " + tableName + " SET ";
+  public boolean updateById(String tableName, HashMap<String, Object> values) {
     values = (HashMap) values.clone();
     int id = (Integer) values.remove("ID");
+    return update(tableName, values, "ID = ?", id) == 1;
+  }
+
+  public int update(String tableName, HashMap<String, Object> values, String conditions, Object... arguments) {
+    String query = "UPDATE " + tableName + " SET ";
+    List parameters = new ArrayList<Object>(values.size() + arguments.length);
     Set keys = values.keySet();
 
     for (Iterator i = keys.iterator(); i.hasNext();) {
       String key = (String) i.next();
       query += i.hasNext() ? key + " = ?, " : key + " = ? ";
+      parameters.add(values.get(key));
     }
-    query += "WHERE ID = ?";
-
-    List parameters = new ArrayList<Object>(values.values());
-    parameters.add(id);
+    if (conditions != null) {
+      query += "WHERE " + conditions;
+      parameters.addAll(Arrays.asList(arguments));
+    }
 
     try {
       PreparedStatement stmt = conn.prepareStatement(query);
       for (int i = 0; i < parameters.size(); i++) {
         stmt.setObject(i + 1, parameters.get(i));
       }
-      return stmt.executeUpdate() == 1;
+      return stmt.executeUpdate();
     } catch (SQLException ex) {
       Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-      return false;
+      return 0;
     }
   }
 

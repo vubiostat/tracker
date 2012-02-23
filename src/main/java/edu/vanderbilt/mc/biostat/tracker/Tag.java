@@ -63,7 +63,7 @@ public class Tag extends Model {
   }
 
   public boolean update() {
-    return getDatabase().update("tags", getAttributes());
+    return getDatabase().updateById("tags", getAttributes());
   }
 
   @Override

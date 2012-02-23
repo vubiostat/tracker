@@ -125,7 +125,7 @@ public class DatabaseTest extends TestCase {
   }
 
   @Test
-  public void updatingARecord() {
+  public void updatingARecordById() {
     Database db = getDatabase();
 
     HashMap values = new HashMap<String, Object>();
@@ -134,7 +134,7 @@ public class DatabaseTest extends TestCase {
 
     values.put("ID", id);
     values.put("NAME", "bar");
-    Assert.assertTrue(db.update("projects", values));
+    Assert.assertTrue(db.updateById("projects", values));
     Assert.assertTrue(values.containsKey("ID"));
 
     HashMap actualValues = db.findById("projects", id);
@@ -186,5 +186,24 @@ public class DatabaseTest extends TestCase {
 
     db.delete("projects", "name LIKE ?", "foo%");
     Assert.assertEquals(1, db.count("projects"));
+  }
+
+  @Test
+  public void updateWithConditions() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo_1");
+    db.insert("projects", values);
+
+    values.put("NAME", "foo_2");
+    db.insert("projects", values);
+
+    values.put("NAME", "bar");
+    db.insert("projects", values);
+
+    values.put("NAME", "junk");
+    Assert.assertEquals(2, db.update("projects", values, "name LIKE ?", "foo_%"));
+    Assert.assertEquals(2, db.count("projects", "name = ?", "junk"));
   }
 }

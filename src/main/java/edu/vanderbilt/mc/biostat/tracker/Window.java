@@ -211,8 +211,6 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        System.out.println(lblToday.getUI().getClass().getName());
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 

@@ -1,6 +1,7 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
@@ -31,6 +32,7 @@ public class App {
   }
 
   public void start() {
+    stopAllActivities();
     window.setVisible(true);
   }
 
@@ -63,5 +65,11 @@ public class App {
   public boolean stopActivity(Activity activity) {
     activity.endedAt = new Date();
     return activity.update();
+  }
+  
+  public void stopAllActivities() {
+    HashMap values = new HashMap<String, Object>(1);
+    values.put("ended_at", new Date());
+    Activity.updateAll(values, "ended_at IS NULL");
   }
 }

@@ -69,4 +69,12 @@ public class AppTest extends TestCase {
     app.stopActivity(activity);
     Assert.assertNotNull(activity.endedAt);
   }
+  
+  @Test
+  public void stopAllActivities() {
+    Activity activity = app.startActivity("foo@bar", null);
+    app.stopAllActivities();
+    activity = Activity.findById(activity.id);
+    Assert.assertNotNull(activity.endedAt);
+  }
 }

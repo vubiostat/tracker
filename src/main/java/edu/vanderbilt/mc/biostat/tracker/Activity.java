@@ -43,6 +43,10 @@ public class Activity extends Model {
   public static int count(String conditions, Object... arguments) {
     return getDatabase().count("activities", conditions, arguments);
   }
+  public static int updateAll(HashMap<String, Object> values, String conditions, Object... arguments) {
+    return getDatabase().update("activities", values, conditions, arguments);
+  }
+  
   public int id;
   public int projectId;
   public String name;
@@ -76,7 +80,7 @@ public class Activity extends Model {
   }
 
   public boolean update() {
-    return getDatabase().update("activities", getAttributes());
+    return getDatabase().updateById("activities", getAttributes());
   }
 
   public Project getProject() {
