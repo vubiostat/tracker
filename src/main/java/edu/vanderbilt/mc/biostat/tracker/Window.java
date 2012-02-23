@@ -167,6 +167,8 @@ public class Window extends javax.swing.JFrame {
         );
 
         scrlToday.setBackground(new java.awt.Color(255, 255, 255));
+        scrlToday.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrlToday.setDoubleBuffered(true);
         scrlToday.setFont(scrlToday.getFont());
 
         tblToday.setModel(new ActivityTableModel());
