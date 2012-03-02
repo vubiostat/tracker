@@ -95,12 +95,12 @@ public class Database {
     return records.size() > 0 ? (HashMap) records.get(0) : (HashMap) null;
   }
 
-  public List findAll(String tableName) {
+  public List<HashMap> findAll(String tableName) {
     return findAll(tableName, null);
   }
 
-  public List findAll(String tableName, String conditions, Object... arguments) {
-    List records = new ArrayList<HashMap>();
+  public List<HashMap> findAll(String tableName, String conditions, Object... arguments) {
+    List<HashMap> records = new ArrayList<HashMap>();
     try {
       String query = "SELECT * FROM " + tableName;
       if (conditions != null) {
@@ -184,6 +184,10 @@ public class Database {
       Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
     }
     return -1;
+  }
+
+  public boolean deleteById(String tableName, int id) {
+    return delete(tableName, "ID = ?", id) == 1;
   }
 
   public int delete(String tableName, String conditions, Object... arguments) {

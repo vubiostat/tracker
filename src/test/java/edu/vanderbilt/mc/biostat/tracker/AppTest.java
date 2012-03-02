@@ -71,6 +71,14 @@ public class AppTest extends TestCase {
   }
   
   @Test
+  public void stopActivityDeletesShortActivity() {
+    Activity activity = app.startActivity("foo@bar", null);
+    app.stopActivity(activity);
+    activity = Activity.findById(activity.id);
+    Assert.assertNull(activity);
+  }
+  
+  @Test
   public void stopAllActivities() {
     Activity activity = app.startActivity("foo@bar", null);
     app.stopAllActivities();

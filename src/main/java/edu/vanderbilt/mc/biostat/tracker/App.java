@@ -64,6 +64,9 @@ public class App {
 
   public boolean stopActivity(Activity activity) {
     activity.endedAt = new Date();
+    if (activity.getDuration() < 60000) {
+      return activity.destroy();
+    }
     return activity.update();
   }
   

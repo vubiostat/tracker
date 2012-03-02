@@ -2,6 +2,7 @@ package edu.vanderbilt.mc.biostat.tracker;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import org.junit.After;
@@ -14,17 +15,21 @@ public class TestCase {
 
   @Before
   public void setUp() {
-    try {
-      File tempFile = File.createTempFile("tracker", "db");
-      tempFile.deleteOnExit();
-      databasePath = tempFile.getAbsolutePath();
-    } catch (IOException ex) {
-      Assert.fail("Couldn't create temporary file: " + ex.toString());
-    }
+    SecureRandom random = new SecureRandom();
+    String tmpDir = System.getProperty("java.io.tmpdir");
+    String databaseName;
+    File databaseFile;
+    do {
+      databaseName = "tracker" + Math.abs(random.nextLong());
+      databaseFile = new File(databaseName + ".h2.db", tmpDir);
+    } while (databaseFile.exists());
+    databasePath = databaseFile.getAbsolutePath();
   }
 
   @After
   public void tearDown() {
+    new File(databasePath + ".h2.db").delete();
+    new File(databasePath + ".trace.db").delete();
   }
 
   protected Database getDatabase() {

@@ -1,6 +1,9 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 
 public class Window extends javax.swing.JFrame {
 
@@ -8,13 +11,18 @@ public class Window extends javax.swing.JFrame {
   private Activity currentActivity;
   private boolean activityNameEntered = false;
   private boolean activityTagsEntered = false;
+  private Timer timer;
 
-  /**
-   * Creates new form Window
-   */
   public Window(App parent) {
     this.parent = parent;
+    this.timer = new Timer(60000, new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        activityTick();
+      }
+    });
     initComponents();
+    getRootPane().setDefaultButton(btnStartTracking);
   }
 
   private void updateActivityForm() {
@@ -31,10 +39,21 @@ public class Window extends javax.swing.JFrame {
   private void updateCurrentActivity() {
     if (currentActivity == null) {
       lblCurrentActivity.setText("No activity");
+      lblCurrentTime.setText("");
       btnStopTracking.setEnabled(false);
+      timer.stop();
     } else {
       lblCurrentActivity.setText(currentActivity.name);
+      lblCurrentTime.setText(currentActivity.getDurationString());
       btnStopTracking.setEnabled(true);
+      timer.start();
+    }
+  }
+
+  private void activityTick() {
+    if (currentActivity != null) {
+      lblCurrentTime.setText(currentActivity.getDurationString());
+      ((ActivityTableModel)tblToday.getModel()).fireTableDataChanged();
     }
   }
 
@@ -173,6 +192,7 @@ public class Window extends javax.swing.JFrame {
 
         tblToday.setModel(new ActivityTableModel());
         tblToday.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblToday.setColumnMargin(0);
         tblToday.setDoubleBuffered(true);
         tblToday.setEditable(false);
         tblToday.setShowHorizontalLines(false);
@@ -209,7 +229,7 @@ public class Window extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblToday)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrlToday, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                .addComponent(scrlToday, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -268,7 +288,6 @@ public class Window extends javax.swing.JFrame {
 
     ((ActivityTableModel) tblToday.getModel()).updateActivities();
   }//GEN-LAST:event_btnStopTrackingActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnStartTracking;
     private javax.swing.JButton btnStopTracking;

@@ -1,7 +1,6 @@
 package edu.vanderbilt.mc.biostat.tracker;
 
 import java.awt.Graphics;
-import javax.swing.JViewport;
 import org.jdesktop.swingx.JXTable;
 
 public class ActivityTable extends JXTable {
@@ -31,6 +30,9 @@ public class ActivityTable extends JXTable {
 
     int tableWidth = Math.max(getPreferredSize().width, getParent().getWidth());
     int columnWidth = tableWidth - width;
-    getColumnExt(count - 2).setPreferredWidth(columnWidth < 0 ? 0 : columnWidth);
+    
+    if (count == 7) { 
+      getColumnExt(count - 2).setPreferredWidth(columnWidth < 0 ? 0 : columnWidth);
+    }
   }
 }

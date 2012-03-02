@@ -82,6 +82,10 @@ public class Activity extends Model {
   public boolean update() {
     return getDatabase().updateById("activities", getAttributes());
   }
+  
+  public boolean destroy() {
+    return getDatabase().deleteById("activities", id);
+  }
 
   public Project getProject() {
     return Project.findById(projectId);

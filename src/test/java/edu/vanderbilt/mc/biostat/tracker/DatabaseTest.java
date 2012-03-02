@@ -189,6 +189,19 @@ public class DatabaseTest extends TestCase {
   }
 
   @Test
+  public void deleteById() {
+    Database db = getDatabase();
+
+    HashMap values = new HashMap<String, Object>();
+    values.put("NAME", "foo");
+    db.insert("projects", values);
+    
+    values = db.findAll("projects").get(0);
+    db.deleteById("projects", (Integer) values.get("ID"));
+    Assert.assertEquals(0, db.count("projects"));
+  }
+
+  @Test
   public void updateWithConditions() {
     Database db = getDatabase();
 

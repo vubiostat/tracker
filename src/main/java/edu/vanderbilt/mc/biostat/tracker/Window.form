@@ -48,7 +48,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="lblToday" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="scrlToday" pref="130" max="32767" attributes="0"/>
+              <Component id="scrlToday" pref="160" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -254,6 +254,7 @@
               <Connection code="new ActivityTableModel()" type="code"/>
             </Property>
             <Property name="autoResizeMode" type="int" value="0"/>
+            <Property name="columnMargin" type="int" value="0"/>
             <Property name="doubleBuffered" type="boolean" value="true"/>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="showHorizontalLines" type="boolean" value="false"/>

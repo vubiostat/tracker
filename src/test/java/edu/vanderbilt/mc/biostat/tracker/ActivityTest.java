@@ -224,7 +224,18 @@ public class ActivityTest extends TestCase {
 
     HashMap values = new HashMap<String, Object>();
     values.put("ended_at", now);
-    Assert.assertEquals(1, Activity.updateAll(values, "ended_at IS NULL"));    
+    Assert.assertEquals(1, Activity.updateAll(values, "ended_at IS NULL"));
     Assert.assertEquals(0, Activity.count("ended_at IS NULL"));
+  }
+
+  @Test
+  public void destroyActivity() {
+    Date now = new Date();
+    Date startedAt = new Date(now.getTime() - 60000);
+    Date endedAt = new Date(now.getTime() + 60000);
+    Activity activity = Activity.create(project.id, "foo", startedAt, endedAt);
+    
+    Assert.assertTrue(activity.destroy());
+    Assert.assertNull(Activity.findById(activity.id));
   }
 }
